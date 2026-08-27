@@ -1,0 +1,4 @@
+[core]
+    remote = storage
+['remote "storage"']
+    url = gs://shoe-size-predictor-data-2026/dvc-store
