@@ -1,0 +1,50 @@
+name: data-prep
+
+on:
+  workflow_dispatch:
+
+jobs:
+  data-prep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Authenticate to GCS
+        run: |
+          echo "${{ secrets.GCP_SA_KEY }}" | base64 -d > gcp-key.json
+          dvc remote modify storage --local credentialpath gcp-key.json
+
+      - name: Pull raw data from DVC remote
+        run: |
+          dvc pull data/raw/girls_height_centiles_table_DN.csv.dvc
+          dvc pull data/raw/eu_shoe_size_measurements.csv.dvc
+
+      - name: Run preprocessing script
+        run: python src/preprocess_data.py
+
+      - name: Track processed data with DVC
+        run: dvc add data/clean/shoe_size_training_data.csv
+
+      - name: Push processed data to DVC remote
+        run: dvc push
+
+      - name: Commit updated DVC pointer file
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/clean/shoe_size_training_data.csv.dvc data/clean/.gitignore
+          git commit -m "Update processed shoe size dataset [skip ci]"
+          git push
+
+      - name: Clean up credentials file
+        if: always()
+        run: rm -f gcp-key.json
