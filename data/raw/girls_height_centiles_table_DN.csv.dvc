@@ -1,0 +1,5 @@
+outs:
+- md5: 720742f78e3bba841b94fc652c88567d
+  size: 1700
+  hash: md5
+  path: girls_height_centiles_table_DN.csv

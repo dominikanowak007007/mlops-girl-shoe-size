@@ -1,0 +1,5 @@
+outs:
+- md5: 00d458edd8fa6f3c7dd2c806a1394862
+  size: 325
+  hash: md5
+  path: eu_shoe_size_measurements.csv
