@@ -1,5 +1,5 @@
 outs:
-- md5: ea937d07285d647e40dbb49bb492333e
-  size: 636735
+- md5: 9e2199dff4be8f78112ad1e08a33023b
+  size: 517372
   hash: md5
   path: shoe_size_training_data.csv
