@@ -34,7 +34,7 @@ SAMPLES_PER_AGE = 1000
 # Fixed random seed for reproducibility. Without this, DVC would see the
 # output file "change" on every run even when the raw inputs are identical,
 # since the notebook's original code used an unseeded np.random.normal call.
-#RANDOM_SEED = 42
+RANDOM_SEED = 42
 
 
 # ---------------------------------------------------------------------------
@@ -134,7 +134,7 @@ def main():
                          help="Path to write the processed training-ready CSV.")
     args = parser.parse_args()
 
-    #np.random.seed(RANDOM_SEED)
+    np.random.seed(RANDOM_SEED)
 
     if not args.height_input.exists():
         raise FileNotFoundError(f"Raw height centiles file not found: {args.height_input}")
