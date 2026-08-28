@@ -24,7 +24,7 @@ jobs:
         run: dvc pull data/clean/shoe_size_training_data.csv.dvc
 
       - name: Train model
-        run: python src/model_training.py
+        run: python src/model-training.py
 
       - name: Clean up credentials file
         if: always()
