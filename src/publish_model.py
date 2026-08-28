@@ -24,9 +24,7 @@ def get_version_id() -> str:
 
 def load_local_metrics() -> dict:
     if not METRICS_JSON_PATH.exists():
-        raise FileNotFoundError(
-            f"{METRICS_JSON_PATH} not found. Run model_training.py first."
-        )
+        raise FileNotFoundError(f"{METRICS_JSON_PATH} not found. Run model_training.py first.")
     with open(METRICS_JSON_PATH) as f:
         return json.load(f)
 
@@ -40,9 +38,7 @@ def read_best_score(bucket):
 
 def write_best_score(bucket, record: dict) -> None:
     blob = bucket.blob(BEST_SCORE_BLOB_NAME)
-    blob.upload_from_string(
-        json.dumps(record, indent=2), content_type="application/json"
-    )
+    blob.upload_from_string(json.dumps(record, indent=2), content_type="application/json")
 
 
 def upload_model_pickle(bucket, version_id: str) -> str:
@@ -70,9 +66,7 @@ def write_github_output(is_best: bool, version_id: str, mae: float) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Archive the trained model and check if it's the new best."
-    )
+    parser = argparse.ArgumentParser(description="Archive the trained model and check if it's the new best.")
     parser.add_argument(
         "--bucket",
         type=str,
@@ -96,14 +90,10 @@ def main():
 
     if best_record is None:
         is_best = True
-        print(
-            "No previous best found — this is the first model, automatically the new best."
-        )
+        print("No previous best found — this is the first model, automatically the new best.")
     else:
         is_best = current_mae < best_record["mean_absolute_error"]
-        print(
-            f"Previous best: {best_record['mean_absolute_error']} (version {best_record['version_id']})"
-        )
+        print(f"Previous best: {best_record['mean_absolute_error']} (version {best_record['version_id']})")
         print(f"This run {'IS' if is_best else 'is NOT'} an improvement.")
 
     if is_best:

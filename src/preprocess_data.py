@@ -61,9 +61,9 @@ def reconstruct_height_data_from_centiles(height_centile_values, centile_values)
     z_score_mean = np.mean(z_scores)
     values_mean = np.mean(height_centile_values)
 
-    sigma = np.sum(
-        (z_scores - z_score_mean) * (height_centile_values - values_mean)
-    ) / np.sum((z_scores - z_score_mean) ** 2)
+    sigma = np.sum((z_scores - z_score_mean) * (height_centile_values - values_mean)) / np.sum(
+        (z_scores - z_score_mean) ** 2
+    )
     mu = values_mean - sigma * z_score_mean
 
     heights = np.sort(np.round(np.random.normal(mu, sigma, SAMPLES_PER_AGE), 2))
@@ -80,9 +80,7 @@ def get_eu_shoe_sizes(foot_measurements, shoe_size_df: pd.DataFrame):
     return [find_closest_eu_size(shoe_size_df, cm) for cm in foot_measurements]
 
 
-def build_training_dataframe(
-    height_centiles_df: pd.DataFrame, shoe_size_df: pd.DataFrame
-) -> pd.DataFrame:
+def build_training_dataframe(height_centiles_df: pd.DataFrame, shoe_size_df: pd.DataFrame) -> pd.DataFrame:
     """Build the full synthetic Age / Height / Foot Measurement / EU Shoe Size dataset."""
 
     # Percentile columns are every column after the first (age) column,
@@ -106,12 +104,8 @@ def build_training_dataframe(
     for age_index, height_row in enumerate(height_matrix):
         current_age = age_values[age_index]
 
-        generated_heights = reconstruct_height_data_from_centiles(
-            height_row, centile_values
-        )
-        foot_measurements = get_foot_measurements_for_gender(
-            generated_heights, is_girl=True
-        )
+        generated_heights = reconstruct_height_data_from_centiles(height_row, centile_values)
+        foot_measurements = get_foot_measurements_for_gender(generated_heights, is_girl=True)
         estimated_shoe_sizes = get_eu_shoe_sizes(foot_measurements, shoe_size_df)
 
         age_df = pd.DataFrame(
@@ -125,9 +119,7 @@ def build_training_dataframe(
         rows.append(age_df)
 
     result_df = pd.concat(rows, ignore_index=True)
-    result_df["EU Shoe Size"] = pd.to_numeric(
-        result_df["EU Shoe Size"], errors="coerce"
-    )
+    result_df["EU Shoe Size"] = pd.to_numeric(result_df["EU Shoe Size"], errors="coerce")
 
     return result_df
 
@@ -138,9 +130,7 @@ def build_training_dataframe(
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Preprocess raw shoe size data for training."
-    )
+    parser = argparse.ArgumentParser(description="Preprocess raw shoe size data for training.")
     parser.add_argument(
         "--height-input",
         type=Path,
@@ -164,13 +154,9 @@ def main():
     np.random.seed(RANDOM_SEED)
 
     if not args.height_input.exists():
-        raise FileNotFoundError(
-            f"Raw height centiles file not found: {args.height_input}"
-        )
+        raise FileNotFoundError(f"Raw height centiles file not found: {args.height_input}")
     if not args.shoe_size_input.exists():
-        raise FileNotFoundError(
-            f"Raw shoe size measurements file not found: {args.shoe_size_input}"
-        )
+        raise FileNotFoundError(f"Raw shoe size measurements file not found: {args.shoe_size_input}")
 
     # utf-8-sig strips a possible BOM (\ufeff) from the first header cell,
     # e.g. turning "\ufeffGIRL AGE" into "GIRL AGE".

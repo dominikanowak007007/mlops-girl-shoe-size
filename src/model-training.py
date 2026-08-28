@@ -81,9 +81,7 @@ def train_model(df: pd.DataFrame):
     X = df[FEATURE_COLUMNS]
     y = df[TARGET_COLUMN]
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=TEST_SIZE, random_state=RANDOM_STATE
-    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=TEST_SIZE, random_state=RANDOM_STATE)
 
     model = LinearRegression()
     model.fit(X_train, y_train)
@@ -103,9 +101,7 @@ def train_model(df: pd.DataFrame):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Train the shoe size prediction model and log to MLflow."
-    )
+    parser = argparse.ArgumentParser(description="Train the shoe size prediction model and log to MLflow.")
     parser.add_argument(
         "--data-path",
         type=Path,

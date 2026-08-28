@@ -17,12 +17,14 @@ _spec.loader.exec_module(model_training)
 
 @pytest.fixture
 def sample_df():
-    return pd.DataFrame({
-        "Age": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        "Height": [75, 85, 92, 98, 104, 110, 115, 120, 125, 130],
-        "Foot Measurement": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
-        "EU Shoe Size": [20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
-    })
+    return pd.DataFrame(
+        {
+            "Age": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "Height": [75, 85, 92, 98, 104, 110, 115, 120, 125, 130],
+            "Foot Measurement": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+            "EU Shoe Size": [20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
+        }
+    )
 
 
 class TestLoadTrainingData:
