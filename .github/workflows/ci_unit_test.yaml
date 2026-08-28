@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install flake8 pytest
+           pip install flake8 pytest black
 
       - name: Check formatting with black
         run: black --check --line-length 120 src tests
