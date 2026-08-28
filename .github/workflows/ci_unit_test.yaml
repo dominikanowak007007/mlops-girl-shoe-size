@@ -23,6 +23,9 @@ jobs:
           pip install -r requirements.txt
           pip install flake8 pytest
 
+      - name: Check formatting with black
+        run: black --check --line-length 120 src tests
+
       - name: Lint with flake8
         run: flake8 src tests --max-line-length=120
 
