@@ -5,4 +5,5 @@ dvc
 dvc-gs
 mlflow
 scikit-learn
-flaskgoogle-cloud-storage
+flask
+google-cloud-storage
