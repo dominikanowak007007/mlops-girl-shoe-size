@@ -1,0 +1,31 @@
+name: train-model
+
+on:
+  workflow_dispatch:
+
+jobs:
+  train:
+    runs-on: self-hosted
+    env:
+      MLFLOW_TRACKING_URI: http://localhost:5555
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Authenticate to GCS
+        run: |
+          echo "${{ secrets.GCP_SA_KEY }}" | base64 -d > gcp-key.json
+          dvc remote modify storage --local credentialpath gcp-key.json
+
+      - name: Pull training data from DVC remote
+        run: dvc pull data/clean/shoe_size_training_data.csv.dvc
+
+      - name: Train model
+        run: python src/model_training.py
+
+      - name: Clean up credentials file
+        if: always()
+        run: rm -f gcp-key.json

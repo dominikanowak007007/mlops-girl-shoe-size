@@ -3,3 +3,5 @@ numpy
 scipy
 dvc
 dvc-gs
+mlflow
+scikit-learn
