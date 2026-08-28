@@ -51,6 +51,7 @@ RANDOM_STATE = 42
 # Core functions
 # ---------------------------------------------------------------------------
 
+
 def load_training_data(path: Path) -> pd.DataFrame:
     if not path.exists():
         raise FileNotFoundError(
@@ -100,16 +101,35 @@ def train_model(df: pd.DataFrame):
 # Entry point
 # ---------------------------------------------------------------------------
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Train the shoe size prediction model and log to MLflow.")
-    parser.add_argument("--data-path", type=Path, default=DATA_PATH,
-                         help="Path to the processed training-ready CSV.")
-    parser.add_argument("--tracking-uri", type=str, default=DEFAULT_TRACKING_URI,
-                         help="MLflow tracking server URI (e.g. http://localhost:5555).")
-    parser.add_argument("--experiment-name", type=str, default=DEFAULT_EXPERIMENT_NAME,
-                         help="MLflow experiment name to log this run under.")
-    parser.add_argument("--run-name", type=str, default=None,
-                         help="Optional name for this specific MLflow run.")
+    parser = argparse.ArgumentParser(
+        description="Train the shoe size prediction model and log to MLflow."
+    )
+    parser.add_argument(
+        "--data-path",
+        type=Path,
+        default=DATA_PATH,
+        help="Path to the processed training-ready CSV.",
+    )
+    parser.add_argument(
+        "--tracking-uri",
+        type=str,
+        default=DEFAULT_TRACKING_URI,
+        help="MLflow tracking server URI (e.g. http://localhost:5555).",
+    )
+    parser.add_argument(
+        "--experiment-name",
+        type=str,
+        default=DEFAULT_EXPERIMENT_NAME,
+        help="MLflow experiment name to log this run under.",
+    )
+    parser.add_argument(
+        "--run-name",
+        type=str,
+        default=None,
+        help="Optional name for this specific MLflow run.",
+    )
     args = parser.parse_args()
 
     mlflow.set_tracking_uri(args.tracking_uri)
