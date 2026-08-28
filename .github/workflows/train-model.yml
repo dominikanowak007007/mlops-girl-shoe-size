@@ -5,20 +5,25 @@ on:
   pull_request:
     branches:
       - main
+    types: [closed]
     paths:
       - 'src/model-training.py'
 
 jobs:
   train:
     runs-on: self-hosted
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     env:
       MLFLOW_TRACKING_URI: http://localhost:5555
+    outputs:
+      is_best: ${{ steps.publish.outputs.is_best }}
+      version_id: ${{ steps.publish.outputs.version_id }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: python3 -m pip install -r requirements.txt
 
       - name: Authenticate to GCS
         run: |
@@ -29,8 +34,50 @@ jobs:
         run: dvc pull data/clean/shoe_size_training_data.csv.dvc
 
       - name: Train model
-        run: python src/model-training.py
+        run: python3 src/model-training.py
+
+      - name: Archive model to GCS and check if it's the new best
+        id: publish
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcp-key.json
+        run: python3 src/publish_model.py
 
       - name: Clean up credentials file
         if: always()
         run: rm -f gcp-key.json
+
+      - name: Upload model artifact for the build job
+        if: steps.publish.outputs.is_best == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: best-model
+          path: artifacts/model.pkl
+
+  build-and-publish:
+    needs: train
+    if: needs.train.outputs.is_best == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Download model artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: best-model
+          path: artifacts
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_DN }}
+          password: ${{ secrets.DOCKERHUB_TOKEN_DN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_DN }}/shoe-size-predictor:latest
+            ${{ secrets.DOCKERHUB_DN }}/shoe-size-predictor:${{ needs.train.outputs.version_id }}

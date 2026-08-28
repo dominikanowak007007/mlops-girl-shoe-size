@@ -12,7 +12,9 @@ Usage:
 """
 
 import argparse
+import json
 import os
+import pickle
 from pathlib import Path
 
 import mlflow
@@ -33,6 +35,13 @@ TARGET_COLUMN = "EU Shoe Size"
 
 DEFAULT_TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI", "http://localhost:5555")
 DEFAULT_EXPERIMENT_NAME = "shoe-size-predictor"
+
+# Local output directory used to hand off the trained model + metrics to the
+# publish_model.py step, independent of MLflow's own (currently ephemeral)
+# artifact storage.
+ARTIFACTS_DIR = Path("artifacts")
+MODEL_PICKLE_PATH = ARTIFACTS_DIR / "model.pkl"
+METRICS_JSON_PATH = ARTIFACTS_DIR / "metrics.json"
 
 TEST_SIZE = 0.2
 RANDOM_STATE = 42
@@ -67,8 +76,7 @@ def load_training_data(path: Path) -> pd.DataFrame:
 def train_model(df: pd.DataFrame):
     """Split the data, fit a LinearRegression model, and return everything
     needed for evaluation and logging."""
-    
-    df = df[:-3]
+
     X = df[FEATURE_COLUMNS]
     y = df[TARGET_COLUMN]
 
@@ -134,6 +142,22 @@ def main():
         print(f"Metrics: {metrics}")
         print(f"Model coefficients: {dict(zip(FEATURE_COLUMNS, model.coef_))}")
         print(f"Model intercept: {model.intercept_}")
+
+        # Also save a plain pickle + metrics.json locally, so the workflow's
+        # publish_model.py step can archive/promote this model without
+        # depending on MLflow's (currently ephemeral) artifact store.
+        ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
+
+        with open(MODEL_PICKLE_PATH, "wb") as f:
+            pickle.dump(model, f)
+
+        metrics_output = dict(metrics)
+        metrics_output["mlflow_run_id"] = run_id
+        with open(METRICS_JSON_PATH, "w") as f:
+            json.dump(metrics_output, f, indent=2)
+
+        print(f"Saved model pickle to {MODEL_PICKLE_PATH}")
+        print(f"Saved metrics to {METRICS_JSON_PATH}")
 
     print("Training complete.")
 
