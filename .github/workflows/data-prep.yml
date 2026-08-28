@@ -48,3 +48,4 @@ jobs:
       - name: Clean up credentials file
         if: always()
         run: rm -f gcp-key.json
+# ref to be introduced in the next step of the workflow to give chance to choose the pointer to data that is not the most recent
