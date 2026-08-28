@@ -1,4 +1,4 @@
-import importlib.util
+﻿import importlib.util
 import sys
 from pathlib import Path
 
@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 
 # model-training.py has a hyphen in its filename, so it can't be imported
-# with a normal `import model_training` statement (hyphens aren't valid in
+# with a normal import model_training statement (hyphens aren't valid in
 # Python identifiers). Load it directly from its file path instead.
 _MODULE_PATH = Path(__file__).resolve().parent.parent / "src" / "model-training.py"
 _spec = importlib.util.spec_from_file_location("model_training", _MODULE_PATH)
@@ -69,5 +69,4 @@ class TestTrainModel:
     def test_model_predicts_reasonable_values(self, sample_df):
         model, _, _ = model_training.train_model(sample_df)
         prediction = model.predict([[5, 104]])
-        # Predicted shoe size should be in a plausible range for this toy dataset.
         assert 15 <= prediction[0] <= 35
