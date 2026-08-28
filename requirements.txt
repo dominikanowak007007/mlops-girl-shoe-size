@@ -5,5 +5,7 @@ dvc
 dvc-gs
 mlflow
 scikit-learn
+pytest
+flake8
 flask
 google-cloud-storage
