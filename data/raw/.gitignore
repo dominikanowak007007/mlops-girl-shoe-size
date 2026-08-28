@@ -1,2 +1,3 @@
 /girls_height_centiles_table_DN.csv
 /eu_shoe_size_measurements.csv
+.venv/ __pycache__/ *.pyc

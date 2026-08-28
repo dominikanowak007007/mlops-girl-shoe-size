@@ -5,3 +5,5 @@ dvc
 dvc-gs
 mlflow
 scikit-learn
+pytest
+flake8
