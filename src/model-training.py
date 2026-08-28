@@ -68,7 +68,7 @@ def train_model(df: pd.DataFrame):
     """Split the data, fit a LinearRegression model, and return everything
     needed for evaluation and logging."""
     
-    df = df[:-3]
+    df = df[3:-3]
     X = df[FEATURE_COLUMNS]
     y = df[TARGET_COLUMN]
 
