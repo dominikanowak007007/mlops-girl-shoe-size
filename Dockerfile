@@ -1,0 +1,12 @@
+﻿FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir flask scikit-learn gunicorn
+
+COPY artifacts/model.pkl /app/model.pkl
+COPY app.py /app/app.py
+
+EXPOSE 8080
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
